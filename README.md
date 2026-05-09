@@ -24,3 +24,10 @@ At the start, select the appropriate mode for recognizing Point A (if available)
 Verify that Point A on the map is correctly identified.
 Enter the distance to Point A as seen in-game; the program will store this distance and your input as a reference.
 Place a squad marker; the distance measurement result will appear in the web backend approximately one second later.
+
+
+# Referenced Projects in this project:
+NumPy: https://github.com/numpy/numpy
+OpenCV: https://github.com/opencv/opencv
+mss: https://github.com/BoboTiG/python-mss
+I would like to thank the authors and maintainers of these projects.
