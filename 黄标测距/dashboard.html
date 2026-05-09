@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>实时测距面板</title>
+    <style>
+        :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#94a3b8; --ok:#22c55e; --bad:#f97316; --warning:#9b59ff; --arrow:#ff4fd8; --apoint:#39ff6b; }
+        body { margin:0; font-family: "Consolas","SFMono-Regular","Menlo",monospace; background: radial-gradient(circle at 20% 20%, #1e293b, var(--bg)); color:var(--text); }
+        .wrap { max-width: 920px; margin: 28px auto; padding: 0 16px; }
+        .card { background: rgba(17,24,39,.85); border:1px solid #1f2937; border-radius:14px; padding:18px; box-shadow: 0 18px 48px rgba(0,0,0,.35); }
+        .title { font-size: 20px; margin: 0 0 12px 0; }
+        .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+        .item { background:#0b1220; border:1px solid #1f2937; border-radius:10px; padding:12px; }
+        .k { color:var(--muted); font-size:12px; margin-bottom:6px; }
+        .v { font-size:24px; line-height:1.2; }
+        .ok { color:var(--ok); }
+        .bad { color:var(--bad); }
+        .score-warning { color:var(--warning); }
+        .score-arrow { color:var(--arrow); }
+        .score-apoint { color:var(--apoint); }
+        .scores-row { display:flex; flex-wrap:wrap; gap:10px; font-size:20px; }
+        .button-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:center; }
+        .action-btn { background: linear-gradient(135deg, #22c55e, #16a34a); color:white; border:none; border-radius:10px; padding:10px 14px; cursor:pointer; font: inherit; box-shadow: 0 10px 24px rgba(22,163,74,.35); }
+        .action-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+        .mono { font-variant-numeric: tabular-nums; }
+        .foot { margin-top: 10px; color:var(--muted); font-size:12px; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <h1 class="title">实时测距面板</h1>
+            <div class="grid mono">
+                <div class="item"><div class="k">距离</div><div id="distance" class="v">-</div></div>
+                <div class="item"><div class="k">匹配度</div><div id="scores" class="v scores-row"><span id="score_warning" class="score-warning">warning: -</span><span id="score_arrow" class="score-arrow">arrow: -</span></div></div>
+                <div class="item"><div class="k">A点匹配</div><div id="apoint_score" class="v score-apoint">apoint: -</div></div>
+            </div>
+            <div class="button-row">
+                <button id="apoint_btn" class="action-btn">识别A点</button>
+                <input id="apoint_input" type="number" min="1" step="1" placeholder="输入正整数" style="width:140px;background:#0b1220;color:#e5e7eb;border:1px solid #334155;border-radius:8px;padding:9px 10px;font:inherit;" />
+            </div>
+            <details style="margin-top:12px;">
+                <summary style="cursor:pointer;color:#cbd5e1;">当前识别区域直播</summary>
+                <div style="margin-top:10px;">
+                    <img id="roi_live" alt="roi live" style="width:100%;max-width:445px;border-radius:10px;border:1px solid #334155;" />
+                </div>
+            </details>
+            <div class="foot">页面会自动刷新数据，无需手动操作。</div>
+        </div>
+    </div>
+    <script>
+        const roiEl = document.getElementById('roi_live');
+        const apointBtn = document.getElementById('apoint_btn');
+        const apointInput = document.getElementById('apoint_input');
+
+        async function triggerApoint() {
+            try {
+                const r = await fetch('/api/trigger-apoint', { method: 'POST' });
+                const d = await r.json();
+                if (!r.ok || !d.ok) {
+                    return;
+                }
+            } catch (_) {}
+        }
+
+        apointBtn.addEventListener('click', triggerApoint);
+
+        async function submitApointInput() {
+            const v = Number(apointInput.value);
+            if (!Number.isInteger(v) || v <= 0) {
+                return;
+            }
+            try {
+                await fetch('/api/set-apoint-input', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ value: v })
+                });
+            } catch (_) {}
+        }
+
+        apointInput.addEventListener('change', submitApointInput);
+        apointInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                submitApointInput();
+            }
+        });
+
+        async function pull() {
+            try {
+                const r = await fetch('/api/status', { cache: 'no-store' });
+                const d = await r.json();
+                const distEl = document.getElementById('distance');
+                if (d.distance_px === null) {
+                    distEl.textContent = 'nan';
+                    distEl.className = 'v bad';
+                } else {
+                    const roundedToTen = Math.round(d.distance_px / 10) * 10;
+                    distEl.textContent = roundedToTen.toFixed(0) + ' m';
+                    distEl.className = 'v ok';
+                }
+                const nameA = d.template_a_name || 'warning';
+                const nameB = d.template_b_name || 'arrow';
+                const nameC = d.apoint_name || 'apoint';
+                document.getElementById('score_warning').textContent = `${nameA}: ${d.score_a.toFixed(3)}`;
+                document.getElementById('score_arrow').textContent = `${nameB}: ${d.score_b.toFixed(3)}`;
+                document.getElementById('apoint_score').textContent = `${nameC}: ${d.apoint_score.toFixed(3)}`;
+                apointBtn.disabled = !d.apoint_available;
+                apointInput.disabled = !d.apoint_available;
+                if (!apointInput.dataset.hydrated && d.apoint_input_value) {
+                    apointInput.value = String(d.apoint_input_value);
+                    apointInput.dataset.hydrated = '1';
+                }
+            } catch (_) {}
+
+            roiEl.src = '/api/roi.jpg?t=' + Date.now();
+        }
+        setInterval(pull, 300);
+        pull();
+    </script>
+</body>
+</html>
