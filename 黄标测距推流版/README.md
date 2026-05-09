@@ -67,7 +67,7 @@ python shape_distance.py --camera-index 0
 - ROI 固定为输入源右下角 `445x445`，如果目标不在该区域内会持续提示低分数。
 - Windows 下如果路径含中文，优先在项目目录里用相对路径运行（如 `templates/warning.png`）。
 
-  
+
 # Referenced Projects in this project:
 
 NumPy: https://github.com/numpy/numpy
