@@ -28,6 +28,9 @@ Place a squad marker; the distance measurement result will appear in the web bac
 
 # Referenced Projects in this project:
 NumPy: https://github.com/numpy/numpy
+
 OpenCV: https://github.com/opencv/opencv
+
 mss: https://github.com/BoboTiG/python-mss
+
 I would like to thank the authors and maintainers of these projects.
