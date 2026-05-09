@@ -66,3 +66,16 @@ python shape_distance.py --camera-index 0
 - 如需改用其它相机，可用 `--camera-index` 手动指定。
 - ROI 固定为输入源右下角 `445x445`，如果目标不在该区域内会持续提示低分数。
 - Windows 下如果路径含中文，优先在项目目录里用相对路径运行（如 `templates/warning.png`）。
+
+  
+# Referenced Projects in this project:
+
+NumPy: https://github.com/numpy/numpy
+
+OpenCV: https://github.com/opencv/opencv
+
+mss: https://github.com/BoboTiG/python-mss
+
+pygrabber: https://pypi.org/project/pygrabber
+
+I would like to thank the authors and maintainers of these projects.
