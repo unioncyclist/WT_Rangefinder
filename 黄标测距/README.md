@@ -55,3 +55,9 @@ pip install -r requirements.txt
 - 先加 `--debug` 查看实时分数与距离输出。
 - ROI 固定为右下九分之一，如果目标不在该区域内会持续提示低分数。
 - Windows 下如果路径含中文，优先在项目目录里用相对路径运行（如 `templates/warning.png`）。
+
+# Referenced Projects in this project:
+NumPy: https://github.com/numpy/numpy
+OpenCV: https://github.com/opencv/opencv
+mss: https://github.com/BoboTiG/python-mss
+I would like to thank the authors and maintainers of these projects.
