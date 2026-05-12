@@ -1,11 +1,11 @@
 # WT_Rangefinder
-使用OpenCV的战争雷霆小队标记测距工具。仅供个人编程练习，游戏中使用很可能被认为违反EULA封号。
+使用OpenCV的战争雷霆小队标记测距工具。仅供个人编程练习，游戏中使用很可能被认为违反EULA3.2.3封号。
 
 War Thunder squad marking and rangefinding tool using OpenCV. For personal programming practice only; using this in-game is likely to be considered a violation of the EULA and result in a ban.
 
-有两个版本，	Using external video source version和Self hosted Capture Version。Self hosted Capture Version运行在运行游戏的主机上，直接截取右下角小地图区别并在本地进行识别和处理。	
+有两个版本，	推流版和黄标测距普通版，普通版运行在运行游戏的主机上，直接截取右下角小地图区别并在本地进行识别和处理。	
 
-Using external video source version版本使用外部视频推流作为输入，比如说OBS，在另一台电脑上进行处理。
+推流版本使用外部视频推流作为输入，比如说OBS，在另一台电脑上进行处理。
 
 There are two versions: the “Using external video source version” and the “Self-hosted Capture Version.” The Self-hosted Capture Version runs on the host machine running the game, directly capturing the mini-map area in the bottom-right corner and performing recognition and processing locally.	
 The “Using external video source version” uses an external video stream as input—such as OBS—and processes the data on a separate computer.
@@ -31,7 +31,8 @@ Enter the distance to Point A as seen in-game; the program will store this dista
 Place a squad marker; the distance measurement result will appear in the web backend approximately one second later.
 
 
-# Referenced Projects in this project:
+## Referenced Projects in this project:
+
 NumPy: https://github.com/numpy/numpy
 
 OpenCV: https://github.com/opencv/opencv
